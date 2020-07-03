@@ -1,4 +1,5 @@
 
+[toc]
 
 ## RBF 基本原理
 
@@ -90,9 +91,9 @@ fsdf
 
 参考链接
 
-一份对RBF求解过程清晰直观的介绍
+一份对RBF求解过程清晰直观的介绍  
 https://yuki-koyama.github.io/mathtoolbox/rbf-interpolation/
 
-RBF 理论详解
+RBF 理论详解  
 Ken Anjyo, J. P. Lewis, and Frédéric Pighin. 2014. Scattered data interpolation for computer graphics. In ACM SIGGRAPH 2014 Courses (SIGGRAPH '14). ACM, New York, NY, USA, Article 27, 69 pages. DOI: https://doi.org/10.1145/2614028.2615425
 http://scribblethink.org/Courses/ScatteredInterpolation/scatteredinterpcoursenotes.pdf

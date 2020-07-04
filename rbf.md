@@ -85,8 +85,6 @@ $A=\left(\phi(d_{i j})\right) \in \mathbb{R}^{1 \times n}$
 
 
 
-fsdf 
-
 --------------------------
 
 参考链接
@@ -94,6 +92,24 @@ fsdf
 一份对RBF求解过程清晰直观的介绍  
 https://yuki-koyama.github.io/mathtoolbox/rbf-interpolation/
 
+
+
+
+lu 分解的问题  
+https://answer-id.com/47315471
+
+https://scc.ustc.edu.cn/zlsc/sugon/intel/mkl/mkl_manual/index.htm
+https://software.intel.com/content/www/us/en/develop/documentation/mkl-developer-reference-c/top/overview.html
+http://geowu.blogspot.com/2013/05/lapack-dgesv.html
+
+
+批量求 矩阵之间的 欧氏距离的原理是什么  
+https://stackoverflow.com/questions/1401712/how-can-the-euclidean-distance-be-calculated-with-numpy  
+https://blog.csdn.net/frankzd/article/details/80251042  
+https://stackoverflow.com/questions/27948363/numpy-broadcast-to-perform-euclidean-distance-vectorized
+
 RBF 理论详解  
 Ken Anjyo, J. P. Lewis, and Frédéric Pighin. 2014. Scattered data interpolation for computer graphics. In ACM SIGGRAPH 2014 Courses (SIGGRAPH '14). ACM, New York, NY, USA, Article 27, 69 pages. DOI: https://doi.org/10.1145/2614028.2615425
 http://scribblethink.org/Courses/ScatteredInterpolation/scatteredinterpcoursenotes.pdf
+
+https://diginole.lib.fsu.edu/islandora/object/fsu:405601/datastream/PDF/view

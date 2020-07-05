@@ -29,9 +29,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU"
 endif()
 
 
-# Sources and target
-# ==================
-
 
 # Mandatory dependencies
 # ======================
@@ -41,36 +38,8 @@ find_package(xsimd REQUIRED)
 find_package(xtl REQUIRED)
 find_package(Eigen3 REQUIRED NO_MODULE)
 find_package(Threads)
-
-
-include_directories("/usr/local/include")
-link_directories("/usr/local/lib:/usr/lib/aarch64-linux-gnu")
-
-macro(add_xt NAME)
-    add_executable(${NAME} ${ARGN} ${XTENSOR_HEADERS})
-    target_include_directories(${NAME} PRIVATE ${xtensor_INCLUDE_DIRS} ${xtl_INCLUDE_DIRS})
-    target_compile_definitions(${NAME} PRIVATE  HAVE_CBLAS=1 NDEBUG=1)
-    set_target_properties(${NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS NO)
-    target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
-    target_compile_definitions(${NAME} PRIVATE EIGEN_FAST_MATH=1)
-    # target_compile_definitions(${NAME} PRIVATE EIGEN_USE_LAPACKE EIGEN_USE_LAPACKE_STRICT)
-    target_link_libraries(${NAME} Eigen3::Eigen glog gflags lapacke blas lapack ) 
-endmacro(add_xt)
-
-
-macro(add_simd_xt NAME)
-    add_executable(${NAME} ${ARGN} ${XTENSOR_HEADERS})
-    target_include_directories(${NAME} PRIVATE ${xtensor_INCLUDE_DIRS} ${xtl_INCLUDE_DIRS})
-    target_compile_definitions(${NAME} PRIVATE   NDEBUG=1)
-    set_target_properties(${NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS NO)
-    target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
-    target_compile_definitions(${NAME} PRIVATE EIGEN_FAST_MATH=1)
-    target_link_libraries(${NAME} Eigen3::Eigen glog gflags blas lapack) 
-    target_compile_definitions(${NAME} PRIVATE XTENSOR_USE_XSIMD )
-endmacro(add_simd_xt)
-if(APPLE)
-
-endif()
+find_package(BLAS REQUIRED)
+find_package(LAPACK REQUIRED)
 
 
 
@@ -80,23 +49,70 @@ message("FLAGS           : ${CMAKE_CXX_FLAGS}\n")
 message("Found xtensor   : ${xtensor_INCLUDE_DIRS}")
 message("Found xsimd     : ${xsimd_INCLUDE_DIRS}\n\n")
 message("Found eigen     : ${EIGEN3_INCLUDE_DIR}")
+message(STATUS "BLA VENDOR:    " ${BLA_VENDOR})
+message(STATUS "BLAS LIBRARIES: " ${BLAS_LIBRARIES})
+message(STATUS "LAPACK LIBRARIES: " ${LAPACK_LIBRARIES})
+
+add_definitions(-DHAVE_CBLAS=1)
+
+
+macro(add_exe NAME)
+    add_executable(${NAME} ${ARGN} ${XTENSOR_HEADERS})
+    target_include_directories(${NAME} PRIVATE ${xtensor_INCLUDE_DIRS} ${xtl_INCLUDE_DIRS})
+    target_include_directories(${NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
+    target_compile_definitions(${NAME} PRIVATE   NDEBUG=1)
+    set_target_properties(${NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS NO)
+    target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
+endmacro(add_exe)
+
+
+macro(add_xt_lib NAME)
+    add_library(${NAME} OBJECT ${ARGN} ${XTENSOR_HEADERS})
+    target_include_directories(${NAME} PRIVATE ${xtensor_INCLUDE_DIRS} ${xtl_INCLUDE_DIRS})
+    target_compile_definitions(${NAME} PRIVATE  NDEBUG=1)
+    set_target_properties(${NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS NO)
+    target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${NAME} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ) 
+endmacro(add_xt_lib)
+
+
+macro(add_simd_xt NAME)
+    add_xt_lib(lib_rbf_simd_xt rbf_xt.cpp)
+    target_compile_definitions(lib_rbf_simd_xt PRIVATE  XTENSOR_USE_XSIMD=1)
+
+    add_exe(${NAME} rbf_xt_main.cpp)
+    target_link_libraries(${NAME} lib_rbf_simd_xt)
+    target_compile_definitions(${NAME} PRIVATE  XTENSOR_USE_XSIMD=1)
+endmacro(add_simd_xt)
 
 
 
+macro(add_eig_lib NAME)
+    add_library(${NAME} OBJECT ${ARGN} )
+    target_include_directories(${NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
+    target_compile_definitions(${NAME} PRIVATE  NDEBUG=1)
+    set_target_properties(${NAME} PROPERTIES CXX_STANDARD 14 CXX_STANDARD_REQUIRED ON CXX_EXTENSIONS NO)
+    target_link_libraries(${NAME} ${CMAKE_THREAD_LIBS_INIT})
+endmacro(add_eig_lib)
 
-add_xt(xtrbf rbf_xt.cpp)
+add_xt_lib(lib_rbf_xt rbf_xt.cpp)
+add_exe(rbf_xt rbf_xt_main.cpp)
+target_link_libraries(rbf_xt lib_rbf_xt)
 
-add_simd_xt(simd_xtrbf rbf_simd_xt.cpp)
+add_simd_xt(rbf_simd_xt)
 
-add_xt(eigrbf rbf_eig.cpp rbf.cpp)
 
-# add_custom_target(xbenchmark
-#     COMMAND xtensor_benchmark --benchmark_out=bench.csv --benchmark_out_format=csv
-#     DEPENDS ${XTENSOR_BENCHMARK_TARGET})
+add_eig_lib(lib_rbf_eig rbf_eig.cpp)
+add_exe(rbf_eig rbf_eig_main.cpp)
+target_link_libraries(rbf_eig lib_rbf_eig)
 
-# add_custom_target(xpowerbench
-#     COMMAND echo "sudo needed to set cpu power governor to performance"
-#     COMMAND sudo cpupower frequency-set --governor performance
-#     COMMAND xtensor_benchmark --benchmark_out=bench.csv --benchmark_out_format=csv
-#     COMMAND sudo cpupower frequency-set --governor powersave
-#     DEPENDS ${XTENSOR_BENCHMARK_TARGET})
+
+
+add_eig_lib(lib_rbf_eig_la rbf_eig.cpp)
+if(NOT APPLE)
+target_compile_definitions(lib_rbf_eig_la PRIVATE EIGEN_USE_LAPACKE)
+target_link_libraries(lib_rbf_eig_la lapacke)
+endif()
+
+add_exe(rbf_eig_la rbf_eig_main.cpp)
+target_link_libraries(rbf_eig_la lib_rbf_eig_la)

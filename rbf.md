@@ -78,7 +78,7 @@ $xlogy=x\times log(y)$
 $D=(d_{ij})\in\mathbb{R}^{1\times n}$
 2. 对矩阵$D$的每个元素$r=d_{i j}$求其对应的$\phi(d_{i j})=r^2log(r)$得到矩阵  
 $A=\left(\phi(d_{i j})\right) \in \mathbb{R}^{1 \times n}$
-3. $dot(D,\mathbf{w})$求得$y$
+3. $dot(A,\mathbf{w})$求得$y$
 
 ## 关于怎样解线性方程组$Aw=y$的讨论
 
@@ -96,11 +96,10 @@ https://yuki-koyama.github.io/mathtoolbox/rbf-interpolation/
 
 
 lu 分解的问题  
-https://answer-id.com/47315471
-
-https://scc.ustc.edu.cn/zlsc/sugon/intel/mkl/mkl_manual/index.htm
-https://software.intel.com/content/www/us/en/develop/documentation/mkl-developer-reference-c/top/overview.html
-http://geowu.blogspot.com/2013/05/lapack-dgesv.html
+https://answer-id.com/47315471  
+https://scc.ustc.edu.cn/zlsc/sugon/intel/mkl/mkl_manual/index.htm  
+https://software.intel.com/content/www/us/en/develop/documentation/mkl-developer-reference-c/top/overview.html  
+http://geowu.blogspot.com/2013/05/lapack-dgesv.html  
 
 
 批量求 矩阵之间的 欧氏距离的原理是什么  

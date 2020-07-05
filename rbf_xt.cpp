@@ -1,28 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <istream>
-#include <ostream>
-#include <cstdio>
-
-#include <xtensor/xarray.hpp>
-#include <xtensor/xio.hpp>
-#include <xtensor/xview.hpp>
-#include <xtensor/xmath.hpp>
-#include <xtensor/xnorm.hpp>
-#include <xtensor-blas/xlinalg.hpp>
-#include <xtensor/xadapt.hpp>
-#include <xtensor/xmanipulation.hpp>
-#include <xtensor/xrandom.hpp>
-#include <xtensor/xcsv.hpp>
-
-
-#define bp(s) auto  begin_##s = std::chrono::high_resolution_clock::now();
-#define ep(s) std::cout << "Profile:  "  << #s << " spend time(s): " \
-             << (std::chrono::high_resolution_clock::now() - begin_##s)*1.0 / std::chrono::seconds(1) \
-             << std::endl << std::endl; 
-
-using xt::xarray;
-
+#include "rbf_xt.h"
 
 xt::xarray<double> 
 cdist(const xt::xarray<double>& A, const xt::xarray<double>& B)
@@ -114,27 +90,4 @@ load_data(const char* field)
   in_file.close();
   std::cout << xt::adapt(data.shape()) << std::endl;
   return data;
-}
-int main(int argc, char* argv[])
-{
-  auto x = load_data("./data/py-input-x");
-  auto y = load_data("./data/py-input-y");
-  auto z = load_data("./data/py-input-z");
-  auto w = load_data("./data/py-get-w");
-
-  auto xy = xt::transpose(xt::hstack(xt::xtuple(x, y)));
-  bp(cw)
-  auto ww = compute_weights(xy,z);
-  ep(cw)
-  // (788.826836126515, 320.0, 988.0)
-
-
-
-  xt::xarray<double> point {788.826836126515,320};
-  point.reshape({2,1});
-  bp(gv)
-  auto pred = GetValue(point, xy, ww);
-  ep(gv)
-  std::cout << pred << std::endl;
-  return 0;
 }

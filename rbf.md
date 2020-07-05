@@ -83,7 +83,59 @@ $A=\left(\phi(d_{i j})\right) \in \mathbb{R}^{1 \times n}$
 ## 关于怎样解线性方程组$Aw=y$的讨论
 
 
+scipy.RBF 中怎样解线性方程
+```py
+from scipy import linalg
+self.nodes = linalg.solve(self.A, self.di)
+{
+  gecon, getrf, getrs = get_lapack_funcs(('gecon', 'getrf', 'getrs'),
+                                          (a1, b1))
+  lu, ipvt, info = getrf(a1, overwrite_a=overwrite_a)
+  _solve_check(n, info)
+  x, info = getrs(lu, ipvt, b1,
+                  trans=trans, overwrite_b=overwrite_b)
+  _solve_check(n, info)
+  rcond, info = gecon(lu, anorm, norm=norm)
+}
+```
+getrf& getrs 文档
+>getrf:
+computes an LU factorization of a general M-by-N matrix A using partial pivoting with row interchanges.
 
+>getrs:
+Solves a system of linear equations with an LU-factored square matrix, with multiple right-hand sides.
+
+
+xtensor 中怎样解线性方程
+```c++
+auto res = xt::linalg::dot(A, w)();
+{
+  int info = lapack::gesv(dA, db);
+}
+```
+gesv 文档
+
+>The p?gesvfunction computes the solution to a real or complex system of linear equations sub(A)*X = sub(B), where sub(A) = A(ia:ia+n-1, ja:ja+n-1) is an n-by-n distributed matrix and X and sub(B) = B(ib:ib+n-1, jb:jb+nrhs-1) are n-by-nrhs distributed matrices.
+<br>
+The LU decomposition with partial pivoting and row interchanges is used to factor sub(A) as sub(A) = P*L*U, where P is a permutation matrix, L is unit lower triangular, and U is upper triangular. L and U are stored in sub(A). The factored form of sub(A) is then used to solve the system of equations sub(A)*X = sub(B).
+
+
+
+
+
+Eigen 中怎样解线性方程
+```c++
+w = A.lu().solve(this->y);
+{
+  return Solve<PartialPivLU, Rhs>(*this, b.derived());
+}
+```
+
+scipy,xtensor, Eigen 中都是基于
+**The LU decomposition with partial pivoting and row interchanges** 这一原理解线性方程.  
+所不同的是,scipy 和 xtensor 底层都是调用了 lapack 的实现, 而 Eigen 则是自己实现的.
+在Eigen 中,可以通过指定`EIGEN_USE_LAPACKE`这一宏,让Eigen也实际调用lapacke的封装实现.  
+指定之后,在arm平台上, eigrbf 在 solve 这一步的耗时也从 190ms 变成了 520 ms.
 
 --------------------------
 
@@ -112,3 +164,10 @@ Ken Anjyo, J. P. Lewis, and Frédéric Pighin. 2014. Scattered data interpolatio
 http://scribblethink.org/Courses/ScatteredInterpolation/scatteredinterpcoursenotes.pdf
 
 https://diginole.lib.fsu.edu/islandora/object/fsu:405601/datastream/PDF/view
+
+
+怎样让 Eigen 调用 lapack  
+https://eigen.tuxfamily.org/dox/TopicUsingBlasLapack.html
+
+lapack 文档  
+https://scc.ustc.edu.cn/zlsc/sugon/intel/mkl/mkl_manual/index.htm

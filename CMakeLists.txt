@@ -109,8 +109,10 @@ target_link_libraries(rbf_eig lib_rbf_eig)
 
 
 add_eig_lib(lib_rbf_eig_la rbf_eig.cpp)
-if(NOT APPLE)
 target_compile_definitions(lib_rbf_eig_la PRIVATE EIGEN_USE_LAPACKE)
+if(APPLE)
+target_link_libraries(lib_rbf_eig_la  "/usr/local/Cellar/lapack/3.8.0_2/lib/liblapacke.dylib")
+else()
 target_link_libraries(lib_rbf_eig_la lapacke)
 endif()
 

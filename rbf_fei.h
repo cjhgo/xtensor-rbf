@@ -13,21 +13,6 @@
 #include <iostream>
 #include <string>
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
-using std::vector;
-
-using Eigen::InnerStride;
-using Eigen::Map;
-using Eigen::MatrixX2d;
-using Eigen::MatrixX3d;
-using Eigen::MatrixXd;
-using Eigen::RowVector3d;
-using Eigen::RowVectorXd;
-using Eigen::RowVectorXi;
-using Eigen::Vector2d;
-using Eigen::Vector3d;
-using Eigen::VectorXd;
 
 #define profiler_start(s) auto  begin_##s = std::chrono::high_resolution_clock::now();
 #define profiler_end(s) std::cout << "Profile:  "  << #s << " spend time(s): " \
@@ -43,22 +28,24 @@ public:
 
   // API
   void SetData(const Eigen::MatrixXd &X, const Eigen::VectorXd &y);
-  void ComputeWeights(bool use_regularization = false, double lambda = 0.1);
-  double GetValue(const Eigen::VectorXd &x) const;
-  Eigen::MatrixXd GetValues(const Eigen::MatrixXd &x) const;
+  void SetData(const Eigen::MatrixXf &X, const Eigen::VectorXf &y);
 
-  // Getter methods
-  const Eigen::VectorXd &GetY() const { return y; }
-  const Eigen::MatrixXd &GetX() const { return X; }
-  const Eigen::VectorXd &GetW() const { return w; }
+  void ComputeWeights(bool use_regularization = false, double lambda = 0.1);
+
+  double GetValue(const Eigen::VectorXd & xd) const;
+  Eigen::MatrixXd GetValues(const Eigen::MatrixXd & Xd) const;
+
+  float operator()(float xf, float yf) const;
+  Eigen::MatrixXf operator()(const Eigen::MatrixXf& Xf) const;
 
 private:
   // Data points
-  Eigen::MatrixXd X;
-  Eigen::VectorXd y;
+  Eigen::MatrixXf X_;
+  Eigen::VectorXf y_;
 
   // Weights
-  Eigen::VectorXd w;
+  Eigen::VectorXf w_;
+  Eigen::VectorXd w2;
 
 };
 

@@ -64,6 +64,10 @@ double Rbf::GetValue(const VectorXd &x) const {
 
     auto res = A * this->w;
 
+    std::cout << "at rbf ei : " <<
+    this->X(0, 1) << " " << this->X(0, 2) << this->X(0, 3) << std::endl <<
+    this->X(1, 1) << " " << this->X(1, 2) << this->X(1, 3) << std::endl;
+
     return res(0, 0);
 }
 

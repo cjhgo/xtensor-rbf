@@ -3,6 +3,8 @@
 #include <istream>
 #include <ostream>
 #include <cstdio>
+#include <initializer_list>
+
 
 #include <xtensor/xarray.hpp>
 #include <xtensor/xio.hpp>
@@ -38,3 +40,34 @@ GetValue(xt::xarray<double> point,xt::xarray<double> X, xt::xarray<double> w);
 
 xt::xarray<double> 
 load_data(const char* field);
+
+namespace xt
+{
+
+class Rbf {
+public:
+  Rbf()=default;
+
+  // API
+  void SetData(const xt::xarray<double> &X, const xt::xarray<double> &y);
+  void ComputeWeights(double _lambda = 0.1);
+  double operator()(std::initializer_list<double> input_list);
+  double GetValue(const xt::xarray<double> &x) const;
+  xt::xarray<double> GetValues(const xt::xarray<double> &x) const;
+
+  // Getter methods
+  const xt::xarray<double> &GetY() const { return y; }
+  const xt::xarray<double> &GetX() const { return X; }
+  const xt::xarray<double> &GetW() const { return w; }
+
+private:
+  // Data points
+  xt::xarray<double> X;
+  xt::xarray<double> y;
+
+  // Weights
+  xt::xarray<double> w;
+
+};
+
+}

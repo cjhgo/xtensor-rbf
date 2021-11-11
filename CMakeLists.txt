@@ -12,6 +12,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/modules/
 include(CheckCXXCompilerFlag)
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Optional dependencies
 # =====================
 
@@ -106,6 +108,9 @@ add_eig_lib(lib_rbf_eig rbf_eig.cpp)
 add_exe(rbf_eig rbf_eig_main.cpp)
 target_link_libraries(rbf_eig lib_rbf_eig)
 
+add_eig_lib(lib_rbf_fei rbf_fei.cpp)
+add_exe(rbf_fei rbf_fei_main.cpp)
+target_link_libraries(rbf_fei lib_rbf_fei)
 
 
 add_eig_lib(lib_rbf_eig_la rbf_eig.cpp)
@@ -118,3 +123,8 @@ endif()
 
 add_exe(rbf_eig_la rbf_eig_main.cpp)
 target_link_libraries(rbf_eig_la lib_rbf_eig_la)
+
+
+add_exe(use use_xt.cpp)
+
+add_exe(dist impl_dist.cpp)

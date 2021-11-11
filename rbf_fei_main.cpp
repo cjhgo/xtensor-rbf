@@ -5,8 +5,24 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-#include "rbf_eig.h"
+#include "rbf_fei.h"
 
+
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+using std::vector;
+
+using Eigen::InnerStride;
+using Eigen::Map;
+using Eigen::MatrixX2d;
+using Eigen::MatrixX3d;
+using Eigen::MatrixXd;
+using Eigen::RowVector3d;
+using Eigen::RowVectorXd;
+using Eigen::RowVectorXi;
+using Eigen::Vector2d;
+using Eigen::Vector3d;
+using Eigen::VectorXd;
 
 RowVectorXd
 load_data(const char* field)
@@ -34,6 +50,7 @@ int main(int argc, char* argv[])
   auto row_1_y = load_data("./data/py-input-y");
   VectorXd z = load_data("./data/py-input-z").transpose();
   auto w = load_data("./data/py-get-w");
+  
   std::cout << "after file " << z(0,0) << std::endl;
 
   int N = row_0_x.cols();
@@ -42,37 +59,18 @@ int main(int argc, char* argv[])
   input.row(1) = row_1_y;
 
   std::cout << input.rows() << "\t" << input.cols() << std::endl
-            << z.rows()<< "\t" << z.cols() << std::endl; 
+            << z.rows()<< "\t" << z.cols() << std::endl;
 
   Rbf rbf;
   rbf.SetData(input,z);
-  profiler_start(compute)
   rbf.ComputeWeights();
-  profiler_end(compute)
 
-
+  std::cout << " at 0 0 " << rbf(0, 0) << std::endl;
   VectorXd in(2);
-  // in << 0,0;
   in << input(0,0), input(1, 0);
-  profiler_start(singel_eval)
-  double res =rbf.GetValue(in);
-  profiler_end(singel_eval)
-  std::cout << "at rbf 0 0  " << res << std::endl;
 
 
-  /**
-  std::vector<int> range{1,10,100,200,300,400,500};
-  for(auto right: range)
-  {
-    auto slice = input.leftCols(right);
-    VectorXd delta(2,1);
-    delta.setRandom();
-    auto res = slice.colwise() + delta;
-    std::cout << res.rows() << "\t" << res.cols() << std::endl;
-    profiler_start(range_compute)
-    rbf.GetValues(res);
-    profiler_end(range_compute)
-  }
-  **/
+  std::cout << " at 0 0 " << rbf.GetValue(in) << std::endl;
+
   return 0;
 }

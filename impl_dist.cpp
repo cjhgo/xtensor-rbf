@@ -42,7 +42,27 @@ namespace xs = xsimd;
              << std::endl << std::endl; 
 using xt::xarray;
 
+inline MatrixXd cdist(const MatrixXd &meA, const MatrixXd &meB) {
+  int m = meA.cols();
+  int n = meB.cols();
+  MatrixXd D(m, n);
+  double * c = D.data();
 
+  int index = 0;
+  for(int i = 0; i < n; i++){
+    double n0 = meB(0, i);
+    double n1 = meB(1, i);
+    for(int j = 0; j < m;j++){
+      double m0 = meA(0, j);
+      double m1 = meA(1, j);
+
+      double diff0 = m0 - n0;
+      double diff1 = m1 - n1;
+      c[index++] = diff0*diff0 + diff1*diff1;
+    }
+  }
+  return D;
+}
              
 MatrixXd cdist_eig(const MatrixXd& meA, const MatrixXd&  meB)
 {

@@ -25,6 +25,28 @@ using std::vector;
 
 
              
+MatrixXd cdist(const MatrixXd &meA, const MatrixXd &meB) {
+  int m = meA.cols();
+  int n = meB.cols();
+  MatrixXd D(m, n);
+  double * c = D.data();
+
+  int index = 0;
+  for(int i = 0; i < n; i++){
+    double n0 = meB(0, i);
+    double n1 = meB(1, i);
+    for(int j = 0; j < m;j++){
+      double m0 = meA(0, j);
+      double m1 = meA(1, j);
+
+      double diff0 = m0 - n0;
+      double diff1 = m1 - n1;
+      c[index++] = diff0*diff0 + diff1*diff1;
+    }
+  }
+  return D;
+}
+
 MatrixXd mdist(const MatrixXd& meA)
 {
 
@@ -74,7 +96,8 @@ void bench(int row, int col)
   ep(cdist_eig1)
 
   bp(mdistt)
-  mdist(bigb);
+  // mdist(bigb);
+  cdist(bigb, bigb);
   ep(mdistt)
 
 }
@@ -87,7 +110,7 @@ int main(int argc, char* argv[])
   A   << 1,2,3,3,1,5;
 	std::cout << "A is " << A << std::endl;
   std::cout<< "dist eig is :\n" << cdist_eig(A,A) << std::endl;
-  std::cout<< "dist eig is :\n" << mdist(A) << std::endl;
+  std::cout<< "dist eig is :\n" << cdist(A, A) << std::endl;
 
 
 	for(int i = 0; i < 10; i++){
